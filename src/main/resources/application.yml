@@ -14,4 +14,4 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 kakao:
   client_id: 3f53ffa96a908a795ee96ed27c164a14
-  redirect_uri: http://localhost:8080/callback
+

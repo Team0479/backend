@@ -2,18 +2,18 @@ package com.team0479.myplay.controller.auth;
 
 import com.team0479.myplay.domain.user.User;
 import com.team0479.myplay.dto.auth.KakaoUserInfoResponseDto;
+import com.team0479.myplay.dto.auth.RefreshTokenRequest;
+import com.team0479.myplay.dto.auth.TokenRefreshResponse;
 import com.team0479.myplay.service.auth.KakaoService;
 import com.team0479.myplay.service.user.UserService;
 import com.team0479.myplay.config.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -49,10 +49,26 @@ public class KakaoLoginController {
 
         // 5. JWT 생성
         String jwt = jwtProvider.generateToken(user.getEmail());
+        String refreshToken = jwtProvider.generateRefreshToken(user.getEmail());
+
 
         // 6. 프론트로 리디렉션
-        String redirectUrl = "myplay://callback?token=" + jwt;
+        String redirectUrl = "myplay://callback?token=" + jwt + "&refreshToken=" + refreshToken;
         response.sendRedirect(redirectUrl);
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+        // Refresh Token 검증 및 새 Access Token 발급
+        if (jwtProvider.validateToken(request.getRefreshToken())) {
+            String email = jwtProvider.getUserEmailFromToken(request.getRefreshToken());
+            String newAccessToken = jwtProvider.generateToken(email);
+
+            return ResponseEntity.ok(new TokenRefreshResponse(newAccessToken));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+    }
+
 
 }
