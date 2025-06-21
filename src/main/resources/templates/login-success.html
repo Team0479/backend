@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>로그인 성공</title>
+</head>
+<body>
+<h1>로그인에 성공했습니다 🎉</h1>
+<p><strong>닉네임:</strong> <span th:text="${nickname}"></span></p>
+<p><strong>프로필 이미지:</strong><br>
+    <img th:src="${profileImage}" alt="Profile Image" width="100">
+</p>
+</body>
+</html>
