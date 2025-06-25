@@ -17,13 +17,15 @@ public class ReviewListDto {
     private String userNickname;
     private String userProfileImage;
     private Long userId;
+    private String reviewImageUrl;
 
     public ReviewListDto() {}
 
     public ReviewListDto(Long id, String content, Integer rating, Integer likeCount, 
                         Integer viewCount, LocalDateTime createdAt, String performanceTitle,
                         String performanceCategory, String performanceVenue, String performanceImageUrl,
-                        Long performanceId, String userNickname, String userProfileImage, Long userId) {
+                        Long performanceId, String userNickname, String userProfileImage, Long userId,
+                        String reviewImageUrl) {
         this.id = id;
         this.content = content;
         this.rating = rating;
@@ -38,6 +40,7 @@ public class ReviewListDto {
         this.userNickname = userNickname;
         this.userProfileImage = userProfileImage;
         this.userId = userId;
+        this.reviewImageUrl = reviewImageUrl;
     }
 
     // Getters and Setters
@@ -151,5 +154,13 @@ public class ReviewListDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getReviewImageUrl() {
+        return reviewImageUrl;
+    }
+
+    public void setReviewImageUrl(String reviewImageUrl) {
+        this.reviewImageUrl = reviewImageUrl;
     }
 } 

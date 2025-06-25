@@ -33,6 +33,7 @@ public class ReviewPlazaRepository {
         dto.setUserNickname(rs.getString("user_nickname"));
         dto.setUserProfileImage(rs.getString("user_profile_image"));
         dto.setUserId(rs.getLong("user_id"));
+        dto.setReviewImageUrl(rs.getString("review_image_url"));
         return dto;
     };
 
@@ -44,10 +45,16 @@ public class ReviewPlazaRepository {
             SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
-                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id
+                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
+                   ri.image_url as review_image_url
             FROM review r
             INNER JOIN performance p ON r.performance_id = p.id
             INNER JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             WHERE p.title LIKE ?
             ORDER BY r.like_count DESC, r.created_at DESC
             """;
@@ -63,10 +70,16 @@ public class ReviewPlazaRepository {
             SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
-                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id
+                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
+                   ri.image_url as review_image_url
             FROM review r
             INNER JOIN performance p ON r.performance_id = p.id
             INNER JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             ORDER BY r.view_count DESC, r.created_at DESC
             """;
         return jdbcTemplate.query(sql, reviewListRowMapper);
@@ -80,10 +93,16 @@ public class ReviewPlazaRepository {
             SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
-                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id
+                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
+                   ri.image_url as review_image_url
             FROM review r
             INNER JOIN performance p ON r.performance_id = p.id
             INNER JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             WHERE p.category = ?
             ORDER BY r.view_count DESC, r.created_at DESC
             """;
@@ -98,10 +117,16 @@ public class ReviewPlazaRepository {
             SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
-                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id
+                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
+                   ri.image_url as review_image_url
             FROM review r
             INNER JOIN performance p ON r.performance_id = p.id
             INNER JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             INNER JOIN (
                 SELECT performance_id, COUNT(*) as review_count
                 FROM review
@@ -122,10 +147,16 @@ public class ReviewPlazaRepository {
             SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
-                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id
+                   u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
+                   ri.image_url as review_image_url
             FROM review r
             INNER JOIN performance p ON r.performance_id = p.id
             INNER JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             ORDER BY r.created_at DESC
             LIMIT 50
             """;

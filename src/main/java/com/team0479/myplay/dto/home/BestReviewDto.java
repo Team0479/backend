@@ -15,12 +15,13 @@ public class BestReviewDto {
     private Long userId;
     private String userNickname;
     private String userProfileImage;
+    private String reviewImageUrl;
 
     public BestReviewDto() {}
 
     public BestReviewDto(Long reviewId, String content, Integer rating, Integer likeCount, Integer viewCount,
                         LocalDateTime createdAt, Long performanceId, String performanceTitle, String performanceCategory,
-                        Long userId, String userNickname, String userProfileImage) {
+                        Long userId, String userNickname, String userProfileImage, String reviewImageUrl) {
         this.reviewId = reviewId;
         this.content = content;
         this.rating = rating;
@@ -33,6 +34,7 @@ public class BestReviewDto {
         this.userId = userId;
         this.userNickname = userNickname;
         this.userProfileImage = userProfileImage;
+        this.reviewImageUrl = reviewImageUrl;
     }
 
     public Long getReviewId() {
@@ -129,5 +131,13 @@ public class BestReviewDto {
 
     public void setUserProfileImage(String userProfileImage) {
         this.userProfileImage = userProfileImage;
+    }
+
+    public String getReviewImageUrl() {
+        return reviewImageUrl;
+    }
+
+    public void setReviewImageUrl(String reviewImageUrl) {
+        this.reviewImageUrl = reviewImageUrl;
     }
 } 
