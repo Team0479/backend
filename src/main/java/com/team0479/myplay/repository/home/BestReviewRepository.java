@@ -28,6 +28,7 @@ public class BestReviewRepository {
         String sql = """
             SELECT 
                 r.id AS review_id,
+                r.title,
                 r.content,
                 r.rating,
                 r.like_count,
@@ -59,6 +60,7 @@ public class BestReviewRepository {
         String sql = """
             SELECT 
                 r.id AS review_id,
+                r.title,
                 r.content,
                 r.rating,
                 r.like_count,
@@ -84,6 +86,7 @@ public class BestReviewRepository {
         return (ResultSet rs, int rowNum) -> {
             return new BestReviewDto(
                 rs.getLong("review_id"),
+                rs.getString("title"),
                 rs.getString("content"),
                 rs.getInt("rating"),
                 rs.getInt("like_count"),

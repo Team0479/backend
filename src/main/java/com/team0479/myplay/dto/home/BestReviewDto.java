@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class BestReviewDto {
     private Long reviewId;
+    private String title;
     private String content;
     private Integer rating;
     private Integer likeCount;
@@ -18,10 +19,11 @@ public class BestReviewDto {
 
     public BestReviewDto() {}
 
-    public BestReviewDto(Long reviewId, String content, Integer rating, Integer likeCount, Integer viewCount,
+    public BestReviewDto(Long reviewId, String title, String content, Integer rating, Integer likeCount, Integer viewCount,
                         LocalDateTime createdAt, Long performanceId, String performanceTitle, String performanceCategory,
                         Long userId, String userNickname, String userProfileImage) {
         this.reviewId = reviewId;
+        this.title = title;
         this.content = content;
         this.rating = rating;
         this.likeCount = likeCount;
@@ -41,6 +43,14 @@ public class BestReviewDto {
 
     public void setReviewId(Long reviewId) {
         this.reviewId = reviewId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
