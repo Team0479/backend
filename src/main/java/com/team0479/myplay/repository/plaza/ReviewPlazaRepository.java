@@ -20,6 +20,7 @@ public class ReviewPlazaRepository {
     private final RowMapper<ReviewListDto> reviewListRowMapper = (rs, rowNum) -> {
         ReviewListDto dto = new ReviewListDto();
         dto.setId(rs.getLong("id"));
+        dto.setTitle(rs.getString("title"));
         dto.setContent(rs.getString("content"));
         dto.setRating(rs.getObject("rating", Integer.class));
         dto.setLikeCount(rs.getObject("like_count", Integer.class));
@@ -42,7 +43,7 @@ public class ReviewPlazaRepository {
      */
     public List<ReviewListDto> findReviewsByPerformanceTitle(String performanceTitle) {
         String sql = """
-            SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
+            SELECT r.id, r.title, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
                    u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
@@ -67,7 +68,7 @@ public class ReviewPlazaRepository {
      */
     public List<ReviewListDto> findAllReviewsByViewCount() {
         String sql = """
-            SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
+            SELECT r.id, r.title, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
                    u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
@@ -90,7 +91,7 @@ public class ReviewPlazaRepository {
      */
     public List<ReviewListDto> findReviewsByCategory(String category) {
         String sql = """
-            SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
+            SELECT r.id, r.title, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
                    u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
@@ -114,7 +115,7 @@ public class ReviewPlazaRepository {
      */
     public List<ReviewListDto> findPopularPerformanceReviews() {
         String sql = """
-            SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
+            SELECT r.id, r.title, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
                    u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
@@ -144,7 +145,7 @@ public class ReviewPlazaRepository {
      */
     public List<ReviewListDto> findRecentReviews() {
         String sql = """
-            SELECT r.id, r.content, r.rating, r.like_count, r.view_count, r.created_at,
+            SELECT r.id, r.title, r.content, r.rating, r.like_count, r.view_count, r.created_at,
                    p.title as performance_title, p.category as performance_category, 
                    p.venue as performance_venue, p.image_url as performance_image_url, r.performance_id,
                    u.nickname as user_nickname, u.profile_image as user_profile_image, r.user_id,
