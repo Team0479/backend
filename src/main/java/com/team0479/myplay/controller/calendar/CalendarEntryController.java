@@ -2,6 +2,7 @@ package com.team0479.myplay.controller.calendar;
 
 import com.team0479.myplay.dto.calendar.CalendarEntryDto;
 import com.team0479.myplay.dto.calendar.CalendarEntryCreateDto;
+import com.team0479.myplay.dto.calendar.UserExpDto;
 import com.team0479.myplay.service.calendar.CalendarEntryService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -114,6 +115,20 @@ public class CalendarEntryController {
             return ResponseEntity.ok(entry);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * 사용자 경험치 정보 조회
+     * GET /api/calendar/user/{userId}/exp
+     */
+    @GetMapping("/user/{userId}/exp")
+    public ResponseEntity<UserExpDto> getUserExpInfo(@PathVariable Long userId) {
+        try {
+            UserExpDto userExp = calendarEntryService.getUserExpInfo(userId);
+            return ResponseEntity.ok(userExp);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

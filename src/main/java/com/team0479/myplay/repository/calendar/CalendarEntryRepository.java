@@ -135,4 +135,47 @@ public class CalendarEntryRepository {
             id
         );
     }
+
+    /**
+     * 사용자 경험치 업데이트 (일정 등록 시 경험치 증가)
+     */
+    public void updateUserExperience(Long userId, int expGain) {
+        String sql = "UPDATE user SET exp = exp + ? WHERE id = ?";
+        jdbcTemplate.update(sql, expGain, userId);
+    }
+
+    /**
+     * 사용자의 현재 경험치 조회
+     */
+    public int getUserCurrentExp(Long userId) {
+        String sql = "SELECT exp FROM user WHERE id = ?";
+        Integer exp = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        return exp != null ? exp : 0;
+    }
+
+    /**
+     * 사용자의 현재 레벨 조회
+     */
+    public int getUserCurrentLevel(Long userId) {
+        String sql = "SELECT level FROM user WHERE id = ?";
+        Integer level = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        return level != null ? level : 1;
+    }
+
+    /**
+     * 특정 레벨에 필요한 경험치 조회
+     */
+    public int getRequiredExpForLevel(int level) {
+        String sql = "SELECT required_exp FROM level_requirement WHERE level = ?";
+        Integer requiredExp = jdbcTemplate.queryForObject(sql, Integer.class, level);
+        return requiredExp != null ? requiredExp : 0;
+    }
+
+    /**
+     * 사용자 레벨 업데이트
+     */
+    public void updateUserLevel(Long userId, int newLevel) {
+        String sql = "UPDATE user SET level = ? WHERE id = ?";
+        jdbcTemplate.update(sql, newLevel, userId);
+    }
 } 
