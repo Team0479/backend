@@ -38,10 +38,16 @@ public class BestReviewRepository {
                 p.category AS performance_category,
                 r.user_id,
                 u.nickname AS user_nickname,
-                u.profile_image AS user_profile_image
+                u.profile_image AS user_profile_image,
+                ri.image_url AS review_image_url
             FROM review r
             LEFT JOIN performance p ON r.performance_id = p.id
             LEFT JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             ORDER BY r.like_count DESC, r.created_at DESC
             """;
 
@@ -69,10 +75,16 @@ public class BestReviewRepository {
                 p.category AS performance_category,
                 r.user_id,
                 u.nickname AS user_nickname,
-                u.profile_image AS user_profile_image
+                u.profile_image AS user_profile_image,
+                ri.image_url AS review_image_url
             FROM review r
             LEFT JOIN performance p ON r.performance_id = p.id
             LEFT JOIN user u ON r.user_id = u.id
+            LEFT JOIN (
+                SELECT review_id, image_url, 
+                       ROW_NUMBER() OVER (PARTITION BY review_id ORDER BY id ASC) as rn
+                FROM review_image
+            ) ri ON r.id = ri.review_id AND ri.rn = 1
             WHERE p.category = ?
             ORDER BY r.like_count DESC, r.created_at DESC
             """;
@@ -94,7 +106,8 @@ public class BestReviewRepository {
                 rs.getString("performance_category"),
                 rs.getLong("user_id"),
                 rs.getString("user_nickname"),
-                rs.getString("user_profile_image")
+                rs.getString("user_profile_image"),
+                rs.getString("review_image_url")
             );
         };
     }
