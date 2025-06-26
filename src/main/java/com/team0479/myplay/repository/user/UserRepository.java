@@ -1,6 +1,7 @@
 package com.team0479.myplay.repository.user;
 
 import com.team0479.myplay.domain.user.User;
+import com.team0479.myplay.dto.user.UserProfileDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,35 @@ public class UserRepository {
         String sql = "SELECT * FROM user WHERE email = ?";
         return jdbcTemplate.query(sql, new Object[]{email}, userRowMapper())
                 .stream().findFirst();
+    }
+
+    /**
+     * 사용자 프로필 정보 조회 (마이페이지용)
+     */
+    public UserProfileDto getUserProfile(Long userId) {
+        String sql = """
+            SELECT 
+                u.id,
+                u.nickname,
+                u.profile_image,
+                u.level,
+                u.exp,
+                COALESCE(lr.required_exp, 0) as required_exp_for_next_level
+            FROM user u
+            LEFT JOIN level_requirement lr ON lr.level = u.level + 1
+            WHERE u.id = ?
+        """;
+        
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            return new UserProfileDto(
+                rs.getLong("id"),
+                rs.getString("nickname"),
+                rs.getString("profile_image"),
+                rs.getInt("level"),
+                rs.getInt("exp"),
+                rs.getInt("required_exp_for_next_level")
+            );
+        }, userId);
     }
 
     private RowMapper<User> userRowMapper() {
