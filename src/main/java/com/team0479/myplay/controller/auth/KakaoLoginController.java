@@ -39,8 +39,10 @@ public class KakaoLoginController {
         // 3. User 엔티티 생성
         User user = new User();
         user.setEmail("kakao_" + userInfo.getId());
-        user.setNickname(userInfo.getNickname());
-        user.setProfileImage(userInfo.getProfileImageUrl());
+        // 최초 로그인 구별을 위해 닉네임과 프로필 이미지는 null로 저장
+        // 사용자가 직접 설정할 때까지 빈 값으로 유지
+        user.setNickname(null);  // 카카오 닉네임 저장하지 않음
+        user.setProfileImage(null);  // 카카오 프로필 이미지 저장하지 않음
         user.setRole("USER");
         user.setCreatedAt(LocalDateTime.now());
 
@@ -50,7 +52,6 @@ public class KakaoLoginController {
         // 5. JWT 생성
         String jwt = jwtProvider.generateToken(user.getEmail());
         String refreshToken = jwtProvider.generateRefreshToken(user.getEmail());
-
 
         // 6. 프론트로 리디렉션
         String redirectUrl = "myplay://callback?token=" + jwt + "&refreshToken=" + refreshToken;
@@ -69,6 +70,4 @@ public class KakaoLoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
     }
-
-
 }

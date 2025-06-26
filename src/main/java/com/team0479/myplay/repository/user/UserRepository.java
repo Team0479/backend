@@ -2,6 +2,7 @@ package com.team0479.myplay.repository.user;
 
 import com.team0479.myplay.domain.user.User;
 import com.team0479.myplay.dto.user.UserProfileDto;
+import com.team0479.myplay.dto.user.UserExistenceDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -53,6 +54,95 @@ public class UserRepository {
         } catch (Exception e) {
             System.out.println("사용자 ID 조회 실패 - 이메일: " + email + ", 오류: " + e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * 사용자 ID로 존재 여부 및 프로필 완성도 확인
+     */
+    public UserExistenceDto checkUserExistence(Long userId) {
+        String sql = "SELECT id, nickname, profile_image FROM user WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Long id = rs.getLong("id");
+                String nickname = rs.getString("nickname");
+                String profileImage = rs.getString("profile_image");
+                
+                // 닉네임과 프로필 이미지가 모두 설정되어 있는지 확인
+                boolean profileCompleted = (nickname != null && !nickname.trim().isEmpty()) &&
+                                         (profileImage != null && !profileImage.trim().isEmpty());
+                
+                return new UserExistenceDto(id, true, profileCompleted, nickname, profileImage);
+            }, userId);
+        } catch (Exception e) {
+            System.out.println("사용자 존재 확인 실패 - ID: " + userId + ", 오류: " + e.getMessage());
+            return new UserExistenceDto(null, false, false, null, null);
+        }
+    }
+
+    /**
+     * 이메일로 사용자 존재 여부 및 프로필 완성도 확인
+     */
+    public UserExistenceDto checkUserExistenceByEmail(String email) {
+        String sql = "SELECT id, nickname, profile_image FROM user WHERE email = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Long id = rs.getLong("id");
+                String nickname = rs.getString("nickname");
+                String profileImage = rs.getString("profile_image");
+                
+                // 닉네임과 프로필 이미지가 모두 설정되어 있는지 확인
+                boolean profileCompleted = (nickname != null && !nickname.trim().isEmpty()) &&
+                                         (profileImage != null && !profileImage.trim().isEmpty());
+                
+                return new UserExistenceDto(id, true, profileCompleted, nickname, profileImage);
+            }, email);
+        } catch (Exception e) {
+            System.out.println("사용자 존재 확인 실패 - 이메일: " + email + ", 오류: " + e.getMessage());
+            return new UserExistenceDto(null, false, false, null, null);
+        }
+    }
+
+    /**
+     * 사용자 프로필 업데이트 (닉네임, 프로필 이미지)
+     */
+    public boolean updateUserProfile(Long userId, String nickname, String profileImage) {
+        String sql = "UPDATE user SET nickname = ?, profile_image = ? WHERE id = ?";
+        try {
+            int rowsAffected = jdbcTemplate.update(sql, nickname, profileImage, userId);
+            System.out.println("프로필 업데이트 완료 - ID: " + userId + ", 닉네임: " + nickname);
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            System.out.println("프로필 업데이트 실패 - ID: " + userId + ", 오류: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 닉네임 중복 체크
+     */
+    public boolean isNicknameExists(String nickname) {
+        String sql = "SELECT COUNT(*) FROM user WHERE nickname = ?";
+        try {
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nickname);
+            return count != null && count > 0;
+        } catch (Exception e) {
+            System.out.println("닉네임 중복 체크 실패 - 닉네임: " + nickname + ", 오류: " + e.getMessage());
+            return true; // 오류 시 중복으로 처리 (안전)
+        }
+    }
+
+    /**
+     * 닉네임 중복 체크 (자신 제외)
+     */
+    public boolean isNicknameExistsExcludeUser(String nickname, Long userId) {
+        String sql = "SELECT COUNT(*) FROM user WHERE nickname = ? AND id != ?";
+        try {
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nickname, userId);
+            return count != null && count > 0;
+        } catch (Exception e) {
+            System.out.println("닉네임 중복 체크 실패 (자신 제외) - 닉네임: " + nickname + ", 사용자ID: " + userId + ", 오류: " + e.getMessage());
+            return true; // 오류 시 중복으로 처리 (안전)
         }
     }
 
