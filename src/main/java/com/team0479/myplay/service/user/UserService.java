@@ -3,6 +3,9 @@ package com.team0479.myplay.service.user;
 import com.team0479.myplay.domain.user.User;
 import com.team0479.myplay.dto.user.UserProfileDto;
 import com.team0479.myplay.repository.user.UserRepository;
+import com.team0479.myplay.service.mission.MissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,9 +14,16 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private MissionService missionService;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setMissionService(MissionService missionService) {
+        this.missionService = missionService;
     }
 
     public void register(User user) {
@@ -22,6 +32,17 @@ public class UserService {
         }
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
+        
+        // 신규 사용자에게 미션 할당
+        try {
+            // 사용자 ID를 얻기 위해 다시 조회
+            Optional<User> savedUser = userRepository.findByEmail(user.getEmail());
+            if (savedUser.isPresent() && missionService != null) {
+                missionService.assignAllMissionsToNewUser(savedUser.get().getId());
+            }
+        } catch (Exception e) {
+            System.out.println("신규 사용자 미션 할당 실패: " + e.getMessage());
+        }
     }
 
     /**

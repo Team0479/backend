@@ -2,6 +2,9 @@ package com.team0479.myplay.service.review;
 
 import com.team0479.myplay.dto.review.ReviewCreateDto;
 import com.team0479.myplay.repository.review.ReviewCreateRepository;
+import com.team0479.myplay.service.mission.MissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +15,16 @@ import java.util.Map;
 public class ReviewCreateService {
 
     private final ReviewCreateRepository reviewCreateRepository;
+    private MissionService missionService;
 
     public ReviewCreateService(ReviewCreateRepository reviewCreateRepository) {
         this.reviewCreateRepository = reviewCreateRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setMissionService(MissionService missionService) {
+        this.missionService = missionService;
     }
 
     /**
@@ -52,6 +62,16 @@ public class ReviewCreateService {
             // 3. 경험치 증가 (리뷰 작성 시 10 경험치)
             updateUserExperienceAndLevel(reviewCreateDto.getUserId(), 10);
             System.out.println("경험치 10점 추가 완료");
+
+            // 4. 미션 진행도 업데이트 (리뷰 작성)
+            try {
+                if (missionService != null) {
+                    missionService.onReviewCreated(reviewCreateDto.getUserId());
+                    System.out.println("리뷰 작성 미션 진행도 업데이트 완료");
+                }
+            } catch (Exception e) {
+                System.out.println("미션 진행도 업데이트 실패: " + e.getMessage());
+            }
 
             return Map.of(
                 "success", true,

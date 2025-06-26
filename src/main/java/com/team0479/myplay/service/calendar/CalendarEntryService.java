@@ -4,6 +4,9 @@ import com.team0479.myplay.dto.calendar.CalendarEntryDto;
 import com.team0479.myplay.dto.calendar.CalendarEntryCreateDto;
 import com.team0479.myplay.dto.calendar.UserExpDto;
 import com.team0479.myplay.repository.calendar.CalendarEntryRepository;
+import com.team0479.myplay.service.mission.MissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +18,16 @@ import java.util.List;
 public class CalendarEntryService {
 
     private final CalendarEntryRepository calendarEntryRepository;
+    private MissionService missionService;
 
     public CalendarEntryService(CalendarEntryRepository calendarEntryRepository) {
         this.calendarEntryRepository = calendarEntryRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setMissionService(MissionService missionService) {
+        this.missionService = missionService;
     }
 
     /**
@@ -45,6 +55,16 @@ public class CalendarEntryService {
         
         // 경험치 증가 및 레벨 체크 (일정 등록 시 10 경험치 획득)
         updateUserExperienceAndLevel(createDto.getUserId(), 10);
+        
+        // 미션 진행도 업데이트 (캘린더 일정 등록)
+        try {
+            if (missionService != null) {
+                missionService.onCalendarEntryCreated(createDto.getUserId());
+                System.out.println("캘린더 일정 등록 미션 진행도 업데이트 완료");
+            }
+        } catch (Exception e) {
+            System.out.println("미션 진행도 업데이트 실패: " + e.getMessage());
+        }
         
         // 등록된 일정 정보 반환
         return calendarEntryRepository.findById(entryId);
