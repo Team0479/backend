@@ -62,4 +62,11 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    /**
+     * 이메일로 사용자 ID 조회
+     */
+    public Long getUserIdByEmail(String email) {
+        return userRepository.getUserIdByEmail(email);
+    }
 }

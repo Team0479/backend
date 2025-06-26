@@ -44,6 +44,19 @@ public class UserRepository {
     }
 
     /**
+     * 이메일로 사용자 ID 조회
+     */
+    public Long getUserIdByEmail(String email) {
+        String sql = "SELECT id FROM user WHERE email = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Long.class, email);
+        } catch (Exception e) {
+            System.out.println("사용자 ID 조회 실패 - 이메일: " + email + ", 오류: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * 사용자 프로필 정보 조회 (마이페이지용)
      */
     public UserProfileDto getUserProfile(Long userId) {
