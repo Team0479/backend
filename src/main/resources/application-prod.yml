@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/myplay?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: ${DB_PASSWORD}  # 환경변수로 관리
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false  # 운영에서는 false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        
+logging:
+  level:
+    com.team0479.myplay: INFO
+    org.springframework.web: WARN
+  file:
+    name: /home/ec2-user/myplay/logs/myplay.log
+    
+kakao:
+  client_id: ${KAKAO_CLIENT_ID}  # 환경변수로 관리 
