@@ -3,6 +3,7 @@ package com.team0479.myplay.service.review;
 import com.team0479.myplay.dto.review.ReviewCreateDto;
 import com.team0479.myplay.repository.review.ReviewCreateRepository;
 import com.team0479.myplay.service.mission.MissionService;
+import com.team0479.myplay.service.badge.BadgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class ReviewCreateService {
 
     private final ReviewCreateRepository reviewCreateRepository;
     private MissionService missionService;
+    private BadgeService badgeService;
 
     public ReviewCreateService(ReviewCreateRepository reviewCreateRepository) {
         this.reviewCreateRepository = reviewCreateRepository;
@@ -25,6 +27,12 @@ public class ReviewCreateService {
     @Lazy
     public void setMissionService(MissionService missionService) {
         this.missionService = missionService;
+    }
+
+    @Autowired
+    @Lazy
+    public void setBadgeService(BadgeService badgeService) {
+        this.badgeService = badgeService;
     }
 
     /**
@@ -71,6 +79,18 @@ public class ReviewCreateService {
                 }
             } catch (Exception e) {
                 System.out.println("미션 진행도 업데이트 실패: " + e.getMessage());
+            }
+
+            // 5. 칭호 조건 체크 (리뷰 관련 칭호)
+            try {
+                if (badgeService != null) {
+                    badgeService.checkReviewBadges(reviewCreateDto.getUserId());
+                    badgeService.checkBestPlayerRankingBadges(); // 베스트 플레이어 랭킹 변경 체크
+                    badgeService.checkBestReviewRankingBadges(); // 베스트 리뷰 랭킹 변경 체크
+                    System.out.println("리뷰 관련 칭호 조건 체크 완료");
+                }
+            } catch (Exception e) {
+                System.out.println("칭호 조건 체크 실패: " + e.getMessage());
             }
 
             return Map.of(

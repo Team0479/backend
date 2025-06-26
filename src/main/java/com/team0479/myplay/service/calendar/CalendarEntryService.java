@@ -5,6 +5,7 @@ import com.team0479.myplay.dto.calendar.CalendarEntryCreateDto;
 import com.team0479.myplay.dto.calendar.UserExpDto;
 import com.team0479.myplay.repository.calendar.CalendarEntryRepository;
 import com.team0479.myplay.service.mission.MissionService;
+import com.team0479.myplay.service.badge.BadgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class CalendarEntryService {
 
     private final CalendarEntryRepository calendarEntryRepository;
     private MissionService missionService;
+    private BadgeService badgeService;
 
     public CalendarEntryService(CalendarEntryRepository calendarEntryRepository) {
         this.calendarEntryRepository = calendarEntryRepository;
@@ -28,6 +30,12 @@ public class CalendarEntryService {
     @Lazy
     public void setMissionService(MissionService missionService) {
         this.missionService = missionService;
+    }
+
+    @Autowired
+    @Lazy
+    public void setBadgeService(BadgeService badgeService) {
+        this.badgeService = badgeService;
     }
 
     /**
@@ -64,6 +72,17 @@ public class CalendarEntryService {
             }
         } catch (Exception e) {
             System.out.println("미션 진행도 업데이트 실패: " + e.getMessage());
+        }
+
+        // 칭호 조건 체크 (캘린더 관련 칭호)
+        try {
+            if (badgeService != null) {
+                badgeService.checkCalendarBadges(createDto.getUserId());
+                badgeService.checkBestPlayerRankingBadges(); // 베스트 플레이어 랭킹 변경 체크
+                System.out.println("캘린더 관련 칭호 조건 체크 완료");
+            }
+        } catch (Exception e) {
+            System.out.println("칭호 조건 체크 실패: " + e.getMessage());
         }
         
         // 등록된 일정 정보 반환
