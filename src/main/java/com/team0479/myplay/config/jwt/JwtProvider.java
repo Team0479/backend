@@ -12,7 +12,7 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 임시 키, 보통 환경변수로 관리
+    private final Key key = Keys.hmacShaKeyFor("MyPlaySecretKeyForJWTTokenGeneration1234567890".getBytes()); // 고정 키
     private final long EXPIRATION = 1000L * 60 * 60 * 24; // 24시간
 
     public String generateToken(String email) {
