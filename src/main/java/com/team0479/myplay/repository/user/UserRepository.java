@@ -61,16 +61,13 @@ public class UserRepository {
      * 사용자 ID로 존재 여부 및 프로필 완성도 확인
      */
     public UserExistenceDto checkUserExistence(Long userId) {
-        String sql = "SELECT id, nickname, profile_image FROM user WHERE id = ?";
+        String sql = "SELECT id, nickname, profile_image, COALESCE(profile_completed, false) as profile_completed FROM user WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 Long id = rs.getLong("id");
                 String nickname = rs.getString("nickname");
                 String profileImage = rs.getString("profile_image");
-                
-                // 닉네임과 프로필 이미지가 모두 설정되어 있는지 확인
-                boolean profileCompleted = (nickname != null && !nickname.trim().isEmpty()) &&
-                                         (profileImage != null && !profileImage.trim().isEmpty());
+                boolean profileCompleted = rs.getBoolean("profile_completed");
                 
                 return new UserExistenceDto(id, true, profileCompleted, nickname, profileImage);
             }, userId);
@@ -84,16 +81,13 @@ public class UserRepository {
      * 이메일로 사용자 존재 여부 및 프로필 완성도 확인
      */
     public UserExistenceDto checkUserExistenceByEmail(String email) {
-        String sql = "SELECT id, nickname, profile_image FROM user WHERE email = ?";
+        String sql = "SELECT id, nickname, profile_image, COALESCE(profile_completed, false) as profile_completed FROM user WHERE email = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 Long id = rs.getLong("id");
                 String nickname = rs.getString("nickname");
                 String profileImage = rs.getString("profile_image");
-                
-                // 닉네임과 프로필 이미지가 모두 설정되어 있는지 확인
-                boolean profileCompleted = (nickname != null && !nickname.trim().isEmpty()) &&
-                                         (profileImage != null && !profileImage.trim().isEmpty());
+                boolean profileCompleted = rs.getBoolean("profile_completed");
                 
                 return new UserExistenceDto(id, true, profileCompleted, nickname, profileImage);
             }, email);
@@ -104,13 +98,13 @@ public class UserRepository {
     }
 
     /**
-     * 사용자 프로필 업데이트 (닉네임, 프로필 이미지)
+     * 사용자 프로필 업데이트 (닉네임, 프로필 이미지, 프로필 완성 상태)
      */
     public boolean updateUserProfile(Long userId, String nickname, String profileImage) {
-        String sql = "UPDATE user SET nickname = ?, profile_image = ? WHERE id = ?";
+        String sql = "UPDATE user SET nickname = ?, profile_image = ?, profile_completed = true WHERE id = ?";
         try {
             int rowsAffected = jdbcTemplate.update(sql, nickname, profileImage, userId);
-            System.out.println("프로필 업데이트 완료 - ID: " + userId + ", 닉네임: " + nickname);
+            System.out.println("프로필 업데이트 완료 - ID: " + userId + ", 닉네임: " + nickname + ", profile_completed: true");
             return rowsAffected > 0;
         } catch (Exception e) {
             System.out.println("프로필 업데이트 실패 - ID: " + userId + ", 오류: " + e.getMessage());
@@ -184,6 +178,7 @@ public class UserRepository {
             user.setNickname(rs.getString("nickname"));
             user.setProfileImage(rs.getString("profile_image"));
             user.setRole(rs.getString("role"));
+            user.setProfileCompleted(rs.getBoolean("profile_completed"));
             user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
             return user;
         };

@@ -11,6 +11,7 @@ public class User {
     private String nickname;
     private String profileImage;
     private String role;
+    private Boolean profileCompleted;  // 프로필 완성 여부
     private LocalDateTime createdAt;
 
     // getters & setters 생략
@@ -39,6 +40,10 @@ public class User {
         return role;
     }
 
+    public Boolean getProfileCompleted() {
+        return profileCompleted;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -65,6 +70,10 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setProfileCompleted(Boolean profileCompleted) {
+        this.profileCompleted = profileCompleted;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
