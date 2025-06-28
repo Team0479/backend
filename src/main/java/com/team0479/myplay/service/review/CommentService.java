@@ -4,6 +4,9 @@ import com.team0479.myplay.dto.review.CommentDto;
 import com.team0479.myplay.dto.review.CommentCreateDto;
 import com.team0479.myplay.repository.review.CommentRepository;
 import com.team0479.myplay.repository.review.ReviewDetailRepository;
+import com.team0479.myplay.service.mission.MissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +18,17 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReviewDetailRepository reviewDetailRepository;
+    private MissionService missionService;
 
     public CommentService(CommentRepository commentRepository, ReviewDetailRepository reviewDetailRepository) {
         this.commentRepository = commentRepository;
         this.reviewDetailRepository = reviewDetailRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setMissionService(MissionService missionService) {
+        this.missionService = missionService;
     }
 
     /**
@@ -38,6 +48,16 @@ public class CommentService {
         
         // 댓글 작성자에게 경험치 증가 (3 경험치)
         updateUserExperienceAndLevel(createDto.getUserId(), 3);
+        
+        // 미션 진행도 업데이트 (댓글 작성)
+        try {
+            if (missionService != null) {
+                missionService.updateMissionProgress(createDto.getUserId(), "COMMENT_CREATE", 1);
+                System.out.println("댓글 작성 미션 진행도 업데이트 완료");
+            }
+        } catch (Exception e) {
+            System.out.println("댓글 미션 진행도 업데이트 실패: " + e.getMessage());
+        }
         
         // 작성된 댓글 정보 반환
         return commentRepository.findCommentById(commentId);

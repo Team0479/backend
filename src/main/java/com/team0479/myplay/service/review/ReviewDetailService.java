@@ -2,6 +2,9 @@ package com.team0479.myplay.service.review;
 
 import com.team0479.myplay.dto.review.ReviewDetailDto;
 import com.team0479.myplay.repository.review.ReviewDetailRepository;
+import com.team0479.myplay.service.mission.MissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +16,16 @@ import java.util.Map;
 public class ReviewDetailService {
 
     private final ReviewDetailRepository reviewDetailRepository;
+    private MissionService missionService;
 
     public ReviewDetailService(ReviewDetailRepository reviewDetailRepository) {
         this.reviewDetailRepository = reviewDetailRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setMissionService(MissionService missionService) {
+        this.missionService = missionService;
     }
 
     /**
@@ -94,6 +104,16 @@ public class ReviewDetailService {
                 // 좋아요를 누른 사용자에게 경험치 증가 (5 경험치)
                 System.out.println("경험치 증가 실행");
                 updateUserExperienceAndLevel(userId, 5);
+                
+                // 미션 진행도 업데이트 (리뷰 좋아요)
+                try {
+                    if (missionService != null) {
+                        missionService.updateMissionProgress(userId, "REVIEW_LIKE", 1);
+                        System.out.println("리뷰 좋아요 미션 진행도 업데이트 완료");
+                    }
+                } catch (Exception e) {
+                    System.out.println("리뷰 좋아요 미션 진행도 업데이트 실패: " + e.getMessage());
+                }
                 
                 return Map.of(
                     "liked", true,
