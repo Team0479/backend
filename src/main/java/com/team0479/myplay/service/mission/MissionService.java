@@ -78,14 +78,14 @@ public class MissionService {
      * 캘린더 일정 등록 시 미션 진행도 업데이트
      */
     public void onCalendarEntryCreated(Long userId) {
-        updateMissionProgress(userId, "CALENDAR_ENTRY", 1);
+        updateMissionProgress(userId, "CALENDAR_REGISTER", 1);
     }
 
     /**
      * 리뷰 작성 시 미션 진행도 업데이트
      */
     public void onReviewCreated(Long userId) {
-        updateMissionProgress(userId, "REVIEW_WRITE", 1);
+        updateMissionProgress(userId, "REVIEW_CREATE", 1);
     }
 
     /**
